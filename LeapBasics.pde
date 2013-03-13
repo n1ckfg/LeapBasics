@@ -5,7 +5,7 @@ import com.leapmotion.leap.*;
 LeapMotionP5 leap;
 
 boolean reverseZ = true;
-boolean singleMode = true;
+boolean singleMode = false;
 boolean handsMode = true;
 PFont font;
 String fontFace = "Arial";
@@ -99,26 +99,20 @@ void draw() {
     }
   }
   //--
-  String on1, on2, on3;
-  if (singleMode) {
-    on1 = "ON";
-  } else {
-    on1 = "OFF";
-  }
-  if (handsMode) {
-    on2 = "ON";
-  } else {
-    on2 = "OFF";
-  }
-  if (reverseZ) {
-    on3 = "ON";
-  } else {
-    on3 = "OFF";
-  }
-  String sayText = "Single Pointable Mode: " + on1 + "   |   Hands Mode: " + on2 + "   |   Reverse Z: " + on3;
+  String sayText = "Single pointable mode: " + setOnOff(singleMode) + "   |   Hands mode: " + setOnOff(handsMode) + "   |   reverse Z: " + setOnOff(reverseZ);
   fill(fontColor);
   text(sayText, 20, 20);
   text("fps: " + int(frameRate), 20, 40);
+}
+
+String setOnOff(boolean _b){
+  String s;
+  if(_b){
+    s = "ON";
+  }else{
+    s = "OFF";
+  }
+  return s;
 }
 
 public void stop() {
