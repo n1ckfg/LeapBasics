@@ -18,7 +18,7 @@ class PointablePoint{
   }
   
   void draw(){
-    drawDot(p, fgColor, idHand + "." + idPointable);
+    drawDot(p, fgColor, idHand + "-" + idPointable);
   }
   
   void run(){

@@ -12,8 +12,18 @@ PFont font;
 String fontFace = "Arial";
 int fontSize = 12;
 color fontColor = color(255);
+
 String scriptsFilePath = "data";
 boolean record = false;
+boolean firstRun = true;
+boolean applySmoothing = true;
+int smoothNum = 6; //smoothing
+float weight = 18;
+float scaleNum  = 1.0 / (weight + 2);
+Data dataAE, dataMaya;
+boolean writeAE = false;
+boolean writeMaya = true;
+int counter = 0;
 
 int numHands = 2;
 HandPoint[] handPoints = new HandPoint[numHands];
@@ -82,6 +92,15 @@ void draw() {
   fill(fontColor);
   text(sayText, 20, 20);
   text("fps: " + int(frameRate), 20, 40);
+  
+  if (record) {
+    counter++;
+    println("frames: " + counter + "   seconds: " + (counter/fps));
+  }
+  else if (!record && !firstRun) {
+    writeAllKeys();
+    exit();
+  }
 }
 
 String setOnOff(boolean _b){
@@ -99,8 +118,25 @@ public void stop() {
 }
 
 void initHands(PVector _p){
-  for(int i=0;i<numHands;i++){
+  for(int i=0;i<handPoints.length;i++){
     handPoints[i] = new HandPoint(i, _p);
+  }
+}
+
+void clearMemory(){
+  counter=0;
+  //--
+  for(int i=0;i<numHands;i++){
+    handPoints[i].handPath = new ArrayList();
+    for(int j=0;j<handPoints[i].originPoints.length;j++){
+      handPoints[i].originPoints[j].pointablePath = new ArrayList();
+    }
+    for(int k=0;k<handPoints[i].fingerPoints.length;k++){
+      handPoints[i].fingerPoints[k].pointablePath = new ArrayList();
+    }
+    for(int l=0;l<handPoints[i].toolPoints.length;l++){
+      handPoints[i].toolPoints[l].pointablePath = new ArrayList();
+    }
   }
 }
 
@@ -124,10 +160,17 @@ void drawConnect(PVector _p1, PVector _p2){
   stroke(255,100);
   strokeWeight(2);
   noFill();
-  PVector s = new PVector(1,1,1); //hit detect range
-  if(!hitDetect3D(_p2,s,pStart,s)){
+  if(!pStartCheck(_p2)){
     line(_p1.x, _p1.y, _p1.z, _p2.x, _p2.y, _p2.z); 
   }
+}
+
+boolean pStartCheck(PVector _p){
+    if(hitDetect3D(_p,new PVector(1,1,1),pStart,new PVector(1,1,1))){
+      return true;
+    }else{
+      return false;
+    }
 }
   
 //3D Hit Detect.  Assumes center.  xyz, whd of object 1, xyz, whd of object 2.
@@ -150,4 +193,9 @@ boolean hitDetect3D(PVector p1, PVector s1, PVector p2, PVector s2) {
   else {
     return false;
   }
+}
+
+void writeAllKeys() {
+  //if (writeAE) AEkeysMain();  // After Effects, JavaScript
+  if (writeMaya) mayaKeysMain();  // Maya, Python
 }
